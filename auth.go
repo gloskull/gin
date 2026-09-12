@@ -26,7 +26,11 @@ func BasicAuthForRealm(accounts Accounts, realm string) HandlerFunc {
 	}
 
 	return func(c *Context) {
-		user, password, hasAuth := c.Request.BasicAuth()
+		var user, password string
+		var hasAuth bool
+		if c.Request != nil {
+			user, password, hasAuth = c.Request.BasicAuth()
+		}
 		if hasAuth {
 			if secret, ok := accounts[user]; ok {
 				if subtle.ConstantTimeCompare([]byte(secret), []byte(password)) == 1 {
